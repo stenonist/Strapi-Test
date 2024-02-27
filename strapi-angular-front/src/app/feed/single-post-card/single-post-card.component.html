@@ -1,0 +1,28 @@
+<!-- <div *ngIf="post" (dblclick)="edit.emit(post)"  class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md">
+    
+    <img class="rounded-t-lg" [src]="post.photo" alt="" />
+    
+    <div class="p-5">
+        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">{{post.title}}</h5>
+        
+        <p class="mb-3 font-normal text-gray-700">{{post.description}}</p>
+        
+    </div>
+</div> -->
+<!-- <div *ngIf="post" (dblclick)="edit.emit(post)" class="flex flex-col items-center w-full bg-white border rounded-lg shadow-md md:flex-row hover:bg-gray-100">
+    <img class="object-cover h-auto rounded-t-lg w-96 md:rounded-none md:rounded-l-lg" [src]="post.photo" alt="">
+    <div class="flex flex-col justify-between p-4 leading-normal">
+        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{post.title}}</h5>
+        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{post.description}}</p>
+    </div>
+</div> -->
+
+<div *ngIf="post" (dblclick)="edit.emit(post)" class="bg-white border border-gray-200 rounded-lg shadow-md w-80">
+    <img *ngIf="post.attributes.photo" class="object-contain rounded-t-lg bg-primary h-80 w-80" src="http://localhost:1337{{post.attributes.photo.data.attributes.url}}" alt="">
+    <div class="p-5">
+        <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{post.attributes.title}}</h5>
+        <span class="mb-2">{{userName}}</span>
+        <p class="mb-3 font-normal text-gray-700">{{post.attributes.description}}</p>
+    </div>
+</div>
+

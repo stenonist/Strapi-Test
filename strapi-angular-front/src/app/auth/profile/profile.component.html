@@ -1,0 +1,21 @@
+<div class="flex flex-col gap-4 mainCont">
+    <div class="flex flex-row items-center w-full gap-8 bg-gray-200 rounded-full" *ngIf="selectedUser">
+        <img *ngIf="selectedUser.profilePic; else noPic" class="object-cover w-40 h-40 rounded-full" src="http://localhost:1337{{selectedUser.profilePic.url}}" alt="">
+        <ng-template #noPic>
+            <img class="object-cover w-40 h-40 bg-gray-300 rounded-full" src="" alt="">
+        </ng-template>
+        <div class="flex flex-row items-center gap-8">
+            <h1 class="text-3xl">{{selectedUser.firstname}} {{selectedUser.lastname}}</h1>
+            <!-- <button *ngIf="isUserLoggedIn && !isFollowing && !isCurrentPage" class="px-4 py-2 mx-5 text-lg text-white duration-300 rounded-lg bg-primary hover:bg-secondary" (click)="followUser(selectedUser?.id)">Follow</button>
+            <button *ngIf="isUserLoggedIn && isFollowing && !isCurrentPage" class="px-4 py-2 mx-5 text-lg text-white duration-300 rounded-lg bg-secondary hover:bg-primary" (click)="unfollowUser(selectedUser?.id)">Unfollow</button> -->
+        </div>
+        <div class="grid items-center h-40 grid-cols-3 gap-6 px-20 ml-auto bg-gray-300 rounded-full">
+            <div class="flex flex-col items-center justify-center gap-2">Posts: <span class="text-3xl">{{[(userPosts)]}}</span></div>
+            <div class="flex flex-col items-center justify-center gap-2">Followers: <span class="text-3xl">{{[(selectedUser.followers.length)]}}</span></div>
+            <div class="flex flex-col items-center justify-center gap-2">Following: <span class="text-3xl">{{[(selectedUser.following.length)]}}</span></div>
+        </div>
+    </div>
+</div>
+
+
+<a routerLink="/profile/2">GO</a>

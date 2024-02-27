@@ -1,0 +1,55 @@
+<section class="flex flex-col items-center justify-center h-full mainCont">
+    <h1 class="my-8 text-2xl">Start using the best social media there is</h1>
+    <form class="flex flex-col justify-center w-1/2 gap-3 p-8 mx-auto rounded-lg bg-gray-100/50 backdrop-blur-sm"
+    #f="ngForm" (ngSubmit)="onSubmit(f)">
+        <mat-form-field class="input">
+            <input class="!ring-0" type="text" matInput placeholder="Your Username" ngModel name="username"
+            required #usernameInput="ngModel">
+            <mat-error *ngIf="usernameInput.hasError('required')">Field should not be empty</mat-error>
+        </mat-form-field>
+        <mat-form-field class="input">
+            <input class="!ring-0" type="text" matInput placeholder="Your Name" ngModel name="firstname"
+            required #nameInput="ngModel">
+            <mat-error *ngIf="nameInput.hasError('required')">Field should not be empty</mat-error>
+        </mat-form-field>
+        <mat-form-field class="input">
+            <input class="!ring-0" type="text" matInput placeholder="Your Surname" ngModel name="lastname"
+            required #surnameInput="ngModel">
+            <mat-error *ngIf="surnameInput.hasError('required')">Field should not be empty</mat-error>
+        </mat-form-field>
+        <fieldset class="flex flex-row items-center form-group">
+          <div class="flex flex-col justify-center h-32">
+            <label>Upload Image</label>
+            <div class="custom-file fileInputProfileWrap">
+              <div class="row col-md-12">
+                <input required type="file" name="profilePic" (change)="onChange($event)" class="fileInputProfile form-control">
+                <!-- <input name="profilePic" ngModel type="hidden" [value]="cardImageBase64"> -->
+              </div>
+            </div>
+          </div>
+          <div class="ml-auto img-space">
+            <ng-container *ngIf="isImageSaved;">
+              <!-- <img class="object-cover w-32 h-32" [src]="cardImageBase64"/> -->
+            </ng-container>
+          </div>
+        </fieldset>
+        <mat-form-field class="input">
+            <input class="!ring-0" type="email" matInput placeholder="Your Email" ngModel name="email"
+            email required #emailInput="ngModel">
+            <mat-error *ngIf="emailInput.hasError('required')">Field should not be empty</mat-error>
+            <mat-error *ngIf="!emailInput.hasError('required')">Enter the correct format</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="input" hintLabel="Please enter minimum 8 characters.">
+            <input class="!ring-0" type="password" matInput placeholder="Your password" ngModel name="password"
+            required minlength="8" #passInput="ngModel">
+            <mat-hint align="end"> {{ passInput.value?.length }} / 8 </mat-hint>
+        </mat-form-field>
+
+        <!-- Location dropdown -->
+
+        <!-- input i zasebni button koji dodajte tagove -->
+
+        <button [disabled]="f.invalid" class="!mx-auto px-6 py-2 bg-primary disabled:hover:bg-gray-400 disabled:hover:px-6 text-white rounded-lg hover:bg-secondary duration-300 hover:px-8" type="submit" color="primary">Submit</button>
+    </form>
+</section>

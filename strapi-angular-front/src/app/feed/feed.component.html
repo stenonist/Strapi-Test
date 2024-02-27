@@ -1,0 +1,27 @@
+<div class="content-wrapper">
+    
+</div>
+<div class="flex flex-row flex-wrap justify-center gap-8 mainCont" *ngIf="hasPosts && currUser">
+<!-- <div class="flex flex-row flex-wrap justify-center gap-8 mainCont"> -->
+    
+	<app-single-post-card (dblclick)="editTask(post)" *ngFor="let post of posts" [post]="post"></app-single-post-card>
+
+</div>
+<div *ngIf="currUser" class="flex flex-col items-center gap-8 mainCont">
+	<h1 class="text-4xl text-center">You are currently not following anyone</h1>
+	
+	<div class="flex flex-row items-center justify-center w-full gap-12">
+		<div class="flex flex-col items-center justify-center gap-4 p-8 bg-gray-100" *ngFor="let u of users">
+			<img *ngIf="u.profilePic.url; else noPic" class="object-cover w-40 h-40 rounded-full" src="http://localhost:1337{{u.profilePic.url}}" alt="">
+			<ng-template #noPic>
+				<img class="object-cover w-40 h-40 bg-gray-300 rounded-full" src="" alt="">
+			</ng-template>
+			<h1 class="text-center">{{u.firstname}} {{u.lastname}}</h1>
+			<button *ngIf="!isFollowing(u.id)" class="px-4 py-2 mx-5 text-base text-white duration-300 rounded-lg bg-primary hover:bg-secondary" (click)="followUser(u.id)">follow</button>
+			<button *ngIf="isFollowing(u.id)" class="px-4 py-2 mx-5 text-base text-white duration-300 rounded-lg bg-secondary hover:bg-primary" (click)="unfollowUser(u.id)">unfollow</button>
+		</div>
+	</div>
+	<button class="prim-button" (click)="hasPosts = true">Refresh Feed</button>
+	
+	
+</div>

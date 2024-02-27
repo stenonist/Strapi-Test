@@ -1,0 +1,22 @@
+<section class="flex flex-row mainCont">
+    <form class="flex flex-col justify-center w-1/2 gap-3 px-40 my-40"
+    #f="ngForm" (ngSubmit)="onSubmit(f)">
+        <h1 class="text-4xl text-center">Log into your Account</h1>
+        <mat-form-field class="input">
+            <input class="!ring-0" type="email" matInput placeholder="Your Email" ngModel name="email"
+            email required #emailInput="ngModel">
+            <mat-error *ngIf="emailInput.hasError('required')">Field should not be empty</mat-error>
+            <mat-error *ngIf="!emailInput.hasError('required')">Enter the correct format</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="input" hintLabel="Please enter minimum 8 characters.">
+            <input class="!ring-0" type="password" matInput placeholder="Your password" ngModel name="password"
+            required minlength="8" #passInput="ngModel">
+            <mat-hint align="end" class="hint"> {{ passInput.value?.length }} / 8 </mat-hint>
+        </mat-form-field>
+        <button mat-raised-button type="submit" color="primary">Log in</button>
+    </form>
+    <div class="w-1/2" id="loginImage">
+
+    </div>
+</section>

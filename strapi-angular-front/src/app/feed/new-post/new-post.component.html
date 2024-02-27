@@ -1,0 +1,66 @@
+<!-- <div class="text-center">
+    <input class="form-control" type="file" 
+            (change)="onChange($event)">
+  
+    <button (click)="onUpload()" 
+        class="btn btn-success">
+        Upload
+    </button>
+</div>
+  
+<div class="container text-center jumbotron"
+    *ngIf="shortLink">
+    <h2> Visit Here</h2>
+    <a href="{{shortLink}}">{{shortLink}}</a>
+</div>
+  
+<div class="container" *ngIf="loading">
+    <h3>Loading ...</h3>
+</div> -->
+<div></div>
+<div class="flex flex-col">
+  <fieldset class="flex flex-col items-center gap-4 mb-4 form-group">
+    <div class="w-full img-space">
+      <ng-container *ngIf="isImageSaved;">
+        <!-- <img class="object-cover w-full h-80" [src]="cardImageBase64"/> -->
+      </ng-container>
+    </div>
+    <div class="flex flex-col justify-center" *ngIf="!data.enableDelete">
+      <label>Upload Image</label>
+      <div class="custom-file fileInputProfileWrap">
+        <div class="row col-md-12">
+          <input (change)="onChange($event);" type="file" [(ngModel)]="data.photoFile" class="fileInputProfile form-control">
+        </div>
+        
+      </div>
+    </div>
+    
+  </fieldset>
+  <mat-form-field>
+      <mat-label>Title</mat-label>
+      <input class="!ring-0" matInput cdkFocusInitial [(ngModel)]="data.title" />
+  </mat-form-field>
+    
+  <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea class="!ring-0" matInput [(ngModel)]="data.description"></textarea>
+  </mat-form-field>
+  
+  
+
+  </div>
+  <div mat-dialog-actions>
+      <button
+          *ngIf="data.enableDelete"
+          mat-fab
+          color="primary"
+          aria-label="Delete"
+          [mat-dialog-close]="{id:data.id, title: data.title, description: data.description , delete: true }">
+          <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-button [mat-dialog-close]="{ id:data.id, title: data.title, description: data.description, photoFile: theFile }">OK</button>
+      <button mat-button (click)="cancel()">Cancel</button>
+  </div>
+  
+  
+

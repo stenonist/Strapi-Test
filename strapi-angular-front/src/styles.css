@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+ul{
+    margin: 0;
+}
+
+@layer components{
+    a{
+        @apply no-underline
+    }
+    body{
+        @apply text-terc;
+    }
+    .mainCont{
+        @apply px-[10%]   
+    }
+    #homeLanding{
+        background: url("./assets/bg-1.jpg");
+        background-size: contain;
+        background-position: right;
+        background-repeat: no-repeat;
+    }
+    #adLanding{
+        background: url("./assets/bg-ads1.jpg");
+        background-size: contain;
+        background-position: left;
+        background-repeat: no-repeat;
+    }
+    #logoLanding{
+        background: url("./assets/bg-logo.jpg");
+        background-size: contain;
+        background-position: right;
+        background-repeat: no-repeat;
+    }
+    .prim-button{
+        @apply px-6 py-3 text-lg duration-300 bg-white border-2 border-gray-200 border-solid rounded-full shadow-lg hover:bg-secondary hover:border-secondary hover:text-white shadow-transparent;
+    }
+    
+}
+html, body { height: 100%; }
