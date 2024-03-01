@@ -1,9 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { computed, effect, Injectable, signal, WritableSignal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User, UserCreate, UserUpdate, regSuccess } from './user';
 import { StrapiResponseUser } from './strapi-types';
+
+import { jwtDecode } from "jwt-decode";
 
 @Injectable({
     providedIn: 'root',
@@ -13,24 +15,75 @@ export class UserService {
     allUsers = signal<User[]>([]);
 
     baseUrl: string = environment.baseUrl;
-    headers = new HttpHeaders({
-		'Content-Type': 'application/json',
-		'Authorization': `Bearer ${environment.token}`
-	 })
+    authToken = signal<string>("");
+    headers =  new HttpHeaders({
+        'Authorization': `Bearer ${this.authToken()}`,
+        'Content-Type': 'application/json',
+    });
+        /* new HttpHeaders({
+            'Content-Type': 'application/json',
+            // 'Authorization': `Bearer ${environment.token}`
+        }); */
+       
+    
 
     constructor(private http: HttpClient) {
-        this.getAllUserApi().subscribe({
-            next: (u) => {
-                this.allUsers.set(u);
-            },
-            error: (e) => {
-                console.log(e);
-            },
-        });
+        effect(() => {
+            let decoded = this.getDecodedAccessToken(this.authToken());
+
+            let auth = this.authToken();
+            this.headers = new HttpHeaders({
+                'Authorization': `Bearer ${auth}`,
+                'Content-Type': 'application/json',
+            });
+            
+            
+            
+            if (auth!="") {
+                this.getAllUserApi().subscribe({
+                    next: (u) => {
+                        this.allUsers.set(u);
+                    },
+                    error: (e) => {
+                        console.log(e);
+                    },
+                });
+                this.getUserApi(decoded.id).subscribe({
+                    next: (u) => {
+                        this.currUser.set(u);
+                    },
+                    error: (e) => {
+                        console.log(e);
+                    },
+                });
+            }
+            console.log(this.authToken());
+            
+        })
+        if (this.authToken()!="") {
+            this.getAllUserApi().subscribe({
+                next: (u) => {
+                    this.allUsers.set(u);
+                },
+                error: (e) => {
+                    console.log(e);
+                },
+            });
+        }
     }
+
+    getDecodedAccessToken(token: string): any {
+        try {
+          return jwtDecode(token);
+        } catch(Error) {
+          return null;
+        }
+      }
 
     /* API */
     getUserApi(id: number): Observable<User> {
+        console.log(this.headers);
+        
         return this.http.get<any>(this.baseUrl + '/users/' + id + "?populate=*", {headers: this.headers});
     }
 

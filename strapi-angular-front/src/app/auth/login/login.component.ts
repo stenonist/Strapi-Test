@@ -26,10 +26,17 @@ export class LoginComponent implements OnInit {
     var password = form.value.password;
     this.userService.isPasswordCorrect(email,password).subscribe(res=>{
       if (res.jwt) {
-        this.userService.getUserApi(res.user.id).subscribe(s=>{
-          this.userService.currUser.set(s);
-          this.router.navigate(['/profile']);
-        })
+        this.userService.authToken.set(res.jwt);
+        this.router.navigate(['/profile']);
+        
+        // this.userService.getUserApi(res.user.id).subscribe({
+        //   next: (u) => {
+        //       this.userService.currUser.set(u);
+        //   },
+        //   error: (e) => {
+        //       console.log(e);
+        //   },
+        // });
       }else{
         this.errorExists = true;
         this.errorText = "Password is incorrect";

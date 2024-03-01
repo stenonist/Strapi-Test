@@ -12,47 +12,66 @@ import { StrapiResponsePost } from './strapi-types';
 export class FeedService {
     posts = signal<Post[]>([]);
     followingPosts = signal<Post[] | null>([]);
-	headers = new HttpHeaders({
-		'Content-Type': 'application/json',
-		'Authorization': `Bearer ${environment.token}`
-	 })
-	uploadHeaders = new HttpHeaders({
-		'Authorization': `Bearer ${environment.token}`
-	 })
+    headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.userService.authToken()}`,
+    });
+    uploadHeaders = new HttpHeaders({
+        Authorization: `Bearer ${this.userService.authToken()}`,
+    });
 
     constructor(private http: HttpClient, private userService: UserService) {
-        // this.getAllPostApi().subscribe((res) => {
-			  //   let data = res as {data:[]};
-        // });
-        // this.getFollowingPosts().subscribe(res=>{
-        // 	this.followingPosts.set(res);
-        // })
+		effect(() => {
+
+            let auth = this.userService.authToken();
+            this.headers = new HttpHeaders({
+                'Authorization': `Bearer ${auth}`,
+                'Content-Type': 'application/json',
+            });
+			this.getAllPostApi().subscribe((res) => {
+				let data = res as {data:[]};
+				this.posts.set(data.data);
+			});
+            
+        })
     }
 
     baseUrl: string = environment.baseUrl;
 
     getPostApi(id: number): Observable<Post> {
-        return this.http.get<any>(this.baseUrl + '/posts/' + id + "?populate=*", {headers: this.headers});
-    }
-    getAllPostApi() {
-        return this.http.get(this.baseUrl + '/posts?populate=*', {headers: this.headers}).pipe(
-            tap((res) => {
-              let result = res as StrapiResponsePost;
-              this.posts.set(result.data);
-            })
+        return this.http.get<any>(
+            this.baseUrl + '/posts/' + id + '?populate=*',
+            { headers: this.headers }
         );
     }
-    addPostApi(data: PostAdd) {
-		/* First need to upload the File, then retrieve it and send a post Method with it. */
+    getAllPostApi() {
         return this.http
-            .post(this.baseUrl + '/posts', JSON.stringify(data), {headers: this.headers});
+            .get(this.baseUrl + '/posts?populate=*', { headers: this.headers })
+            .pipe(
+                tap((res) => {
+                    let result = res as StrapiResponsePost;
+                    this.posts.set(result.data);
+                })
+            );
     }
-    updatePostApi(data: PostUpdate): Observable<Post> {		
-        return this.http.put<Post>(this.baseUrl + '/posts/' + data.data.id, data, {headers: this.headers});
+    addPostApi(data: PostAdd) {
+        /* First need to upload the File, then retrieve it and send a post Method with it. */
+        return this.http.post(this.baseUrl + '/posts', JSON.stringify(data), {
+            headers: this.headers,
+        });
+    }
+    updatePostApi(data: PostUpdate): Observable<Post> {
+        return this.http.put<Post>(
+            this.baseUrl + '/posts/' + data.data.id,
+            data,
+            { headers: this.headers }
+        );
         // .pipe(tap(this._upsertPosts));
     }
     deletePostApi(id: number) {
-        return this.http.delete<Post>(this.baseUrl + '/posts/' + id, {headers: this.headers});
+        return this.http.delete<Post>(this.baseUrl + '/posts/' + id, {
+            headers: this.headers,
+        });
     }
 
     /* getFollowingPosts() : Observable<Post[]> {
@@ -73,27 +92,15 @@ export class FeedService {
 			);
     } */
 
-    getPostCount(id:any) {
-      return this.http.get<any>(this.baseUrl + '/posts?filters[authorId][id][$eq]=' + id, {headers: this.headers});
+    getPostCount(id: any) {
+        return this.http.get<any>(
+            this.baseUrl + '/posts?filters[authorId][id][$eq]=' + id,
+            { headers: this.headers }
+        );
     }
 
-    /* public followersUpdate(){
-    this.posts.next(this.getAllPostsFromFollowing());
-  }
+    /* 
 
-  nextPostsUpdate(){
-    this.getAllPostApi().subscribe(res=>{
-      this.posts.next(res);
-    })
-    
-  }
-  getLastId(){
-    if (FeedService.dummyPosts.length !== 0) {
-      return FeedService.dummyPosts[FeedService.dummyPosts.length-1].id;
-    }else{
-      return 1;
-    }
-  }
   getPostCount(id:number|undefined){
     if (id) {
       let found = this.getPostsByUserId(id);
@@ -126,29 +133,5 @@ export class FeedService {
     }
     return foundPosts;
   }
-  addPost(post: Post){
-    let currUser = this.userService.getCurrUser();
-    if (currUser) {
-      post.id = this.getLastId();
-      post.authorId = currUser.id;
-      post.tags = [];
-      post.date = new Date();
-      console.log(post);
-      FeedService.dummyPosts.push(post);
-      this.nextPostsUpdate();
-    }
-
-  }
-  editPost(post: Post){
-    const dataList = FeedService.dummyPosts;
-    const taskIndex = dataList.indexOf(post);
-    FeedService.dummyPosts[taskIndex] = post;
-    this.nextPostsUpdate();
-  }
-  removePost(post: Post){
-    const dataList = FeedService.dummyPosts;
-    const taskIndex = dataList.indexOf(post);
-    FeedService.dummyPosts.splice(taskIndex, 1);
-    this.nextPostsUpdate();
-  } */
+  */
 }
