@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit {
     var password = form.value.password;
     this.userService.isPasswordCorrect(email,password).subscribe(res=>{
       if (res.jwt) {
+        localStorage.setItem('jwt',res.jwt)
         this.userService.authToken.set(res.jwt);
         this.router.navigate(['/profile']);
         

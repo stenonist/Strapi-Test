@@ -20,26 +20,31 @@ export class UserService {
         'Authorization': `Bearer ${this.authToken()}`,
         'Content-Type': 'application/json',
     });
-        /* new HttpHeaders({
-            'Content-Type': 'application/json',
-            // 'Authorization': `Bearer ${environment.token}`
-        }); */
        
     
 
     constructor(private http: HttpClient) {
+        let jwt = localStorage.getItem('jwt');
+        if (jwt) {
+            let decoded = this.getDecodedAccessToken(jwt);
+            let isValid = this.isJwtValid(jwt);
+            
+            if (!isValid) {
+                this.authToken.set(jwt);
+            }else{
+                // Token Expired
+            }
+        }else{
+            // User not Logged in
+        }
         effect(() => {
             let decoded = this.getDecodedAccessToken(this.authToken());
-
-            let auth = this.authToken();
             this.headers = new HttpHeaders({
-                'Authorization': `Bearer ${auth}`,
+                'Authorization': `Bearer ${this.authToken()}`,
                 'Content-Type': 'application/json',
             });
             
-            
-            
-            if (auth!="") {
+            if (this.authToken()!="") {
                 this.getAllUserApi().subscribe({
                     next: (u) => {
                         this.allUsers.set(u);
@@ -57,21 +62,14 @@ export class UserService {
                     },
                 });
             }
-            console.log(this.authToken());
-            
         })
-        if (this.authToken()!="") {
-            this.getAllUserApi().subscribe({
-                next: (u) => {
-                    this.allUsers.set(u);
-                },
-                error: (e) => {
-                    console.log(e);
-                },
-            });
-        }
     }
 
+    isJwtValid(jwt: string){
+        let decoded = this.getDecodedAccessToken(jwt);
+        let expire = decoded.expire;
+        return (Math.floor((new Date).getTime() / 1000)) >= expire;
+    }
     getDecodedAccessToken(token: string): any {
         try {
           return jwtDecode(token);
