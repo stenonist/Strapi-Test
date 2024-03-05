@@ -28,4 +28,9 @@ export class UploadService {
 		return this.http
             .post<[{}]>(this.baseUrl + '/upload', data, {headers: this.headers});
 	}
+  deleteImageApi(id: string){
+		
+		return this.http
+            .delete<[{}]>(this.baseUrl + '/upload/files/' + id, {headers: this.headers});
+	}
 }

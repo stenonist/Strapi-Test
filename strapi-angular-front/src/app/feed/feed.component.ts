@@ -112,9 +112,9 @@ export class FeedComponent implements OnInit {
                                 // this.feedService.getAllPostApi().subscribe(e=>{});
                             });
                             // remove image
-                            // this.uploadService.deletePostApi(post.attributes.photo.data.id).subscribe(e=>{
-                            //     this.feedService.getAllPostApi().subscribe(e=>{});
-                            // });
+                            this.uploadService.deleteImageApi(post.attributes.photo.data.id).subscribe(e=>{
+                               
+                            });
                             //this.feedService.removePost(result.post);
                         } else {
                             this.feedService.updatePostApi({data:{id:result.id,title:result.title,description:result.description}}).subscribe(e=>{

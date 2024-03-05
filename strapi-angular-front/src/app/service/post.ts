@@ -5,7 +5,7 @@ export interface Post{
         description: string,
         photo: {
             data:{
-                id: number,
+                id: string,
                 attributes:{
                     url: string
                 }
@@ -29,7 +29,7 @@ export interface PostGet{
             description: string,
             photo: {
                 data:{
-                    id: number,
+                    id: string,
                     attributes:{
                         url: string
                     }
