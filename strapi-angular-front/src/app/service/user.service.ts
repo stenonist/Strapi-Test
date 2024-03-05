@@ -26,13 +26,13 @@ export class UserService {
     constructor(private http: HttpClient) {
         let jwt = localStorage.getItem('jwt');
         if (jwt) {
-            let decoded = this.getDecodedAccessToken(jwt);
             let isValid = this.isJwtValid(jwt);
-            
             if (!isValid) {
                 this.authToken.set(jwt);
+                console.log(jwt);
             }else{
-                // Token Expired
+                // token expired
+                localStorage.removeItem('jwt');
             }
         }else{
             // User not Logged in
@@ -67,8 +67,11 @@ export class UserService {
 
     isJwtValid(jwt: string){
         let decoded = this.getDecodedAccessToken(jwt);
-        let expire = decoded.expire;
-        return (Math.floor((new Date).getTime() / 1000)) >= expire;
+        
+        let expire = decoded.exp;
+        
+        
+        return new Date().getTime() / 1000 >= expire;
     }
     getDecodedAccessToken(token: string): any {
         try {
@@ -80,8 +83,6 @@ export class UserService {
 
     /* API */
     getUserApi(id: number): Observable<User> {
-        console.log(this.headers);
-        
         return this.http.get<any>(this.baseUrl + '/users/' + id + "?populate=*", {headers: this.headers});
     }
 
@@ -99,29 +100,36 @@ export class UserService {
     updateUserApi(data: UserUpdate) {
         return this.http
             .put<User>(this.baseUrl + '/users/' + data.id, data, {headers: this.headers})
+            .pipe(
+                tap((_) => {
+                    this.getUserApi(data.id).subscribe((usr)=>{
+                        this._upsertUsers(usr);
+                    })
+                })
+            );
     }
     deleteUserApi(id: number) {
         return this.http
             .delete<any>(this.baseUrl + '/users/' + id, {headers: this.headers})
             .pipe(
                 tap((_) => {
-                    this.allUsers.set(this.allUsers().filter((user)=> {user.id !== id}))
+                    this.allUsers.set(this.allUsers().filter((user)=> { return user.id !== id}))
                 })
             );
     }
 
-    // private _upsertUsers = (user: User) => {
-    //     const index = this.allUsers().findIndex((u) => {
-    //         u.id === user.id;
-    //     });
-    //     if (index === -1) {
-    //         this.allUsers.set([...this.allUsers(), user]);
-    //         return;
-    //     }
-    //     this.allUsers.mutate((users) => {
-    //         users[index] = user;
-    //     });
-    // };
+    private _upsertUsers = (user: User) => {
+        const index = this.allUsers().findIndex((u) => {
+            return u.id === user.id;
+        });
+        if (index === -1) {
+            this.allUsers.set([...this.allUsers(), user]);
+            return;
+        }
+        this.allUsers.mutate((users) => {
+            users[index] = user;
+        });
+    };
 
     /* UTILS */
     getCurrUser() {
@@ -166,14 +174,16 @@ export class UserService {
             let data = {id:cu.id, following:{connect:[id]}}
             this.updateUserApi(data).subscribe(
                 u=>{
+                    console.log(u);
+                    
                     if (cu) {
                         this.getUserApi(cu.id).subscribe(u=>{
                             this.currUser.set(u);
                         })
                     }
-                    this.getAllUserApi().subscribe(u=>{
-                        this.allUsers.set(u)
-                    })
+                    // this.getAllUserApi().subscribe(u=>{
+                    //     this.allUsers.set(u)
+                    // })
                 }
             )
         }
@@ -189,9 +199,9 @@ export class UserService {
                             this.currUser.set(u);
                         })
                     }
-                    this.getAllUserApi().subscribe(u=>{
-                        this.allUsers.set(u)
-                    })
+                    // this.getAllUserApi().subscribe(u=>{
+                    //     this.allUsers.set(u)
+                    // })
                 }
             )
         }
@@ -201,5 +211,6 @@ export class UserService {
     }
     logout() {
         this.currUser.set(null);
+        localStorage.removeItem('jwt');
     }
 }

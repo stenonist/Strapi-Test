@@ -77,7 +77,7 @@ export class FeedComponent implements OnInit {
                             let theImage = r[0];
                             if (this.currUser){
                                 this.feedService.addPostApi({data:{title:result.title,description:result.description,date:Date.now(),photo:theImage,author:{connect:[this.currUser?.id]},authorId:this.currUser?.id}}).subscribe(e=>{
-                                    this.feedService.getAllPostApi().subscribe({});
+                                    // this.feedService.getAllPostApi().subscribe({});
                                 });
                             }
                         }
@@ -109,12 +109,16 @@ export class FeedComponent implements OnInit {
                         }
                         if (result.delete && post.id) {
                             this.feedService.deletePostApi(post.id).subscribe(e=>{
-                                this.feedService.getAllPostApi().subscribe(e=>{});
+                                // this.feedService.getAllPostApi().subscribe(e=>{});
                             });
+                            // remove image
+                            // this.uploadService.deletePostApi(post.attributes.photo.data.id).subscribe(e=>{
+                            //     this.feedService.getAllPostApi().subscribe(e=>{});
+                            // });
                             //this.feedService.removePost(result.post);
                         } else {
                             this.feedService.updatePostApi({data:{id:result.id,title:result.title,description:result.description}}).subscribe(e=>{
-                                this.feedService.getAllPostApi().subscribe(e=>{});
+                                // this.feedService.getAllPostApi().subscribe(e=>{});
                             });
                         }
                     });

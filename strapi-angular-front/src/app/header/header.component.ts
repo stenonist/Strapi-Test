@@ -73,7 +73,7 @@ export class HeaderComponent implements OnInit {
                             let theImage = r[0];
                             if (this.currUser) {
                                 this.feedService.addPostApi({data:{title:result.title,description:result.description,photo:theImage,date:Date.now(),author:{connect:[this.currUser?.id]},authorId:this.currUser?.id}}).subscribe(e=>{
-                                    this.feedService.getAllPostApi().subscribe({});
+                                    // this.feedService.getAllPostApi().subscribe({});
                                 });
                             }
                         }

@@ -5,6 +5,7 @@ export interface Post{
         description: string,
         photo: {
             data:{
+                id: number,
                 attributes:{
                     url: string
                 }
@@ -18,6 +19,31 @@ export interface Post{
                 id:number
             }
         },
+    }
+}
+export interface PostGet{
+    data:{
+        id: number,
+        attributes:{
+            title: string,
+            description: string,
+            photo: {
+                data:{
+                    id: number,
+                    attributes:{
+                        url: string
+                    }
+                }
+            }, /* URL OF PHOTO */
+            date: Date,
+            /* MYB comments */
+            tags: string[],
+            authorId: {
+                data:{
+                    id:number
+                }
+            },
+        }
     }
 }
 export interface PostUpdate{

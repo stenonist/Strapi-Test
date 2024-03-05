@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FeedService } from 'src/app/service/feed.service';
@@ -14,11 +14,17 @@ export class LoginComponent implements OnInit {
   errorExists = false;
   errorText = "";
 
-  constructor(private userService: UserService, private feedService: FeedService, private router: Router) { }
+  constructor(private userService: UserService, private feedService: FeedService, private router: Router) {
+    effect(()=>{
+      if (this.userService.currUser()) {
+        this.router.navigate(['/profile']);
+      }
+    })
+  }
 
   userLoggedIn:boolean = false;
   ngOnInit(): void {
-    // this.userService.sharedLoggedin.subscribe(message => {this.userLoggedIn = message; })
+    
   }
 
   onSubmit(form: NgForm){
@@ -28,28 +34,12 @@ export class LoginComponent implements OnInit {
       if (res.jwt) {
         localStorage.setItem('jwt',res.jwt)
         this.userService.authToken.set(res.jwt);
-        this.router.navigate(['/profile']);
         
-        // this.userService.getUserApi(res.user.id).subscribe({
-        //   next: (u) => {
-        //       this.userService.currUser.set(u);
-        //   },
-        //   error: (e) => {
-        //       console.log(e);
-        //   },
-        // });
+        this.router.navigate(['/profile']);
       }else{
         this.errorExists = true;
         this.errorText = "Password is incorrect";
       }
-      
-      /* if (res.length == 0) {
-        this.errorExists = true;
-        this.errorText = "Password is incorrect";
-      }else{
-        this.userService.currUser.set(res[0]);
-        this.router.navigate(['/profile']);
-      } */
     });
     
     

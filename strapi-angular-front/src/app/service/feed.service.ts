@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Post, PostAdd, PostUpdate } from './post';
+import { Post, PostAdd, PostGet, PostUpdate } from './post';
 import { UserService } from './user.service';
 import { StrapiResponsePost } from './strapi-types';
 
@@ -21,24 +21,27 @@ export class FeedService {
     });
 
     constructor(private http: HttpClient, private userService: UserService) {
-		effect(() => {
-
+        effect(() => {
             let auth = this.userService.authToken();
             this.headers = new HttpHeaders({
-                'Authorization': `Bearer ${auth}`,
+                Authorization: `Bearer ${auth}`,
                 'Content-Type': 'application/json',
             });
-			this.getAllPostApi().subscribe((res) => {
-				let data = res as {data:[]};
-				this.posts.set(data.data);
-			});
-            
-        })
+            this.uploadHeaders = new HttpHeaders({
+                Authorization: `Bearer ${auth}`,
+            });
+            if (auth) {
+                this.getAllPostApi().subscribe((res) => {
+                    let data = res as { data: [] };
+                    this.posts.set(data.data);
+                });
+            }
+        });
     }
 
     baseUrl: string = environment.baseUrl;
 
-    getPostApi(id: number): Observable<Post> {
+    getPostApi(id: number) {
         return this.http.get<any>(
             this.baseUrl + '/posts/' + id + '?populate=*',
             { headers: this.headers }
@@ -46,51 +49,76 @@ export class FeedService {
     }
     getAllPostApi() {
         return this.http
-            .get(this.baseUrl + '/posts?populate=*', { headers: this.headers })
+            .get<any>(this.baseUrl + '/posts?populate=*', { headers: this.headers })
             .pipe(
                 tap((res) => {
-                    let result = res as StrapiResponsePost;
-                    this.posts.set(result.data);
+                    this.posts.set(res.data);
                 })
             );
     }
     addPostApi(data: PostAdd) {
         /* First need to upload the File, then retrieve it and send a post Method with it. */
-        return this.http.post(this.baseUrl + '/posts', JSON.stringify(data), {
-            headers: this.headers,
-        });
+        return this.http
+            .post<PostUpdate>(this.baseUrl + '/posts', JSON.stringify(data), {
+                headers: this.headers,
+            })
+            .pipe(
+                tap((p) => {
+                    if (p.data) {
+                        this.getPostApi(parseInt(p.data.id)).subscribe(
+                            (post) => {
+                                this._upsertPosts(post.data);
+                            }
+                        );
+                    }
+                })
+            );
     }
-    updatePostApi(data: PostUpdate): Observable<Post> {
-        return this.http.put<Post>(
-            this.baseUrl + '/posts/' + data.data.id,
-            data,
-            { headers: this.headers }
-        );
-        // .pipe(tap(this._upsertPosts));
+    updatePostApi(data: PostUpdate) {
+        return this.http
+            .put<PostGet>(this.baseUrl + '/posts/' + data.data.id, data, {
+                headers: this.headers,
+            })
+            .pipe(
+                tap((p) => {
+                    if (p.data.id) {
+                        this.getPostApi(p.data.id).subscribe((post) => {
+                            this._upsertPosts(post.data);
+                        });
+                    }
+                })
+            );
     }
     deletePostApi(id: number) {
-        return this.http.delete<Post>(this.baseUrl + '/posts/' + id, {
-            headers: this.headers,
-        });
+        return this.http
+            .delete<Post>(this.baseUrl + '/posts/' + id, {
+                headers: this.headers,
+            })
+            .pipe(
+                tap((_) => {
+                    this.posts.set(
+                        this.posts().filter((post) => {
+                            return post.id !== id;
+                        })
+                    );
+                })
+            );
     }
 
-    /* getFollowingPosts() : Observable<Post[]> {
-        let u = this.userService.currUser();
-		if (!u) {return;}
-		let following = u.following;
-		if (!following) {return;}
-		let url = this.baseUrl + '/posts?';
-		following.forEach(fid => {
-			url += "/authorId=" + fid + "&"
-		});
-		return this.http
-			.get<Post[]>(url)
-			.pipe(
-				tap((res) => {
-					this.followingPosts.set(res);
-				})
-			);
-    } */
+    private _upsertPosts = (post: any) => {
+        console.log(post);
+
+        const index = this.posts().findIndex((p) => {
+            return p.id === post.id;
+        });
+        if (index === -1) {
+            this.posts.set([...this.posts(), post]);
+            return;
+        }
+        this.posts.mutate((posts) => {
+            posts[index] = post;
+        });
+    };
 
     getPostCount(id: any) {
         return this.http.get<any>(
