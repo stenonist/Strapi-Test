@@ -76,7 +76,7 @@ export class FeedComponent implements OnInit {
                         r => {
                             let theImage = r[0];
                             if (this.currUser){
-                                this.feedService.addPostApi({data:{title:result.title,description:result.description,date:Date.now(),photo:theImage,author:{connect:[this.currUser?.id]},authorId:this.currUser?.id}}).subscribe(e=>{
+                                this.feedService.addPostApi({data:{title:result.title,description:result.description,date:Date.now(),photo:theImage,theAuthor:{connect:[this.currUser.id]}}}).subscribe(e=>{
                                     // this.feedService.getAllPostApi().subscribe({});
                                 });
                             }
@@ -91,7 +91,7 @@ export class FeedComponent implements OnInit {
     editTask(post: Post): void {
         if (this.currUser) {
             // verification that the post belongs to logged in user
-            if (post.attributes.authorId.data.id == this.currUser.id) {
+            if (post.attributes.theAuthor.data.id == this.currUser.id) {
                 const dialogRefEdit = this.dialog.open(NewPostComponent, {
                     width: '400px',
                     data: {

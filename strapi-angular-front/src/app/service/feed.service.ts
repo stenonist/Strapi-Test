@@ -57,7 +57,8 @@ export class FeedService {
             );
     }
     addPostApi(data: PostAdd) {
-        /* First need to upload the File, then retrieve it and send a post Method with it. */
+		console.log(data);
+		
         return this.http
             .post<PostUpdate>(this.baseUrl + '/posts', JSON.stringify(data), {
                 headers: this.headers,
@@ -81,8 +82,8 @@ export class FeedService {
             })
             .pipe(
                 tap((p) => {
-                    if (p.data.id) {
-                        this.getPostApi(p.data.id).subscribe((post) => {
+                    if (data.data.id) {
+                        this.getPostApi(parseInt(data.data.id)).subscribe((post) => {
                             this._upsertPosts(post.data);
                         });
                     }
@@ -122,7 +123,7 @@ export class FeedService {
 
     getPostCount(id: any) {
         return this.http.get<any>(
-            this.baseUrl + '/posts?filters[authorId][id][$eq]=' + id,
+            this.baseUrl + '/posts?filters[theAuthor][id][$eq]=' + id,
             { headers: this.headers }
         );
     }
@@ -141,7 +142,7 @@ export class FeedService {
   getPostsByUserId(id:number): Post[]{
     let foundPosts: Post[] = []; 
     FeedService.dummyPosts.forEach(p=>{
-      if (p.authorId === id) {
+      if (p.theAuthor === id) {
         foundPosts.push(p);
       }
     })

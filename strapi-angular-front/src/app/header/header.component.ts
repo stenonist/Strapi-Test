@@ -57,12 +57,12 @@ export class HeaderComponent implements OnInit {
 
                 if (
                     result.title &&
-                    result.description
+                    result.description &&
+                    this.currUser
                 ) {
                     // result.post.authorId = this.userService.getCurrentId();
                     // result.post.attributes.date = new Date();
                     // result.post.attributes.tags = [];
-                    console.log(result.photoFile);
                     
                     const formData = new FormData();
                     formData.append("files", result.photoFile);
@@ -71,8 +71,10 @@ export class HeaderComponent implements OnInit {
                     this.uploadService.uploadImageApi(formData).subscribe(
                         r => {
                             let theImage = r[0];
-                            if (this.currUser) {
-                                this.feedService.addPostApi({data:{title:result.title,description:result.description,photo:theImage,date:Date.now(),author:{connect:[this.currUser?.id]},authorId:this.currUser?.id}}).subscribe(e=>{
+                            console.log(theImage);
+                            
+                            if (this.currUser && this.currUser.id) {
+                                this.feedService.addPostApi({data:{title:result.title,description:result.description,photo:theImage,date:Date.now(),theAuthor:{connect:[this.currUser.id]}}}).subscribe(e=>{
                                     // this.feedService.getAllPostApi().subscribe({});
                                 });
                             }

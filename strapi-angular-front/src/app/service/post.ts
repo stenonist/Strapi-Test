@@ -5,7 +5,7 @@ export interface Post{
         description: string,
         photo: {
             data:{
-                id: string,
+                id: number,
                 attributes:{
                     url: string
                 }
@@ -14,7 +14,7 @@ export interface Post{
         date: Date,
         /* MYB comments */
         tags: string[],
-        authorId: {
+        theAuthor: {
             data:{
                 id:number
             }
@@ -22,28 +22,26 @@ export interface Post{
     }
 }
 export interface PostGet{
-    data:{
-        id: number,
-        attributes:{
-            title: string,
-            description: string,
-            photo: {
-                data:{
-                    id: string,
-                    attributes:{
-                        url: string
-                    }
+    id: number,
+    attributes:{
+        title: string,
+        description: string,
+        photo: {
+            data:{
+                id: number,
+                attributes:{
+                    url: string
                 }
-            }, /* URL OF PHOTO */
-            date: Date,
-            /* MYB comments */
-            tags: string[],
-            authorId: {
-                data:{
-                    id:number
-                }
-            },
-        }
+            }
+        }, /* URL OF PHOTO */
+        date: Date,
+        /* MYB comments */
+        tags: string[],
+        theAuthor: {
+            data:{
+                id:number
+            }
+        },
     }
 }
 export interface PostUpdate{
@@ -59,7 +57,9 @@ export interface PostAdd{
         description: string,
         photo: any,
         date: number,
-        author: {connect: number[]|null},
-        authorId: number|null
+        theAuthor: {
+            connect?: number[]|null,
+            disconnect?: number[]|null,
+        },
     }
 }

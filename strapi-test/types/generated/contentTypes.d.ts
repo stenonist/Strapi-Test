@@ -378,7 +378,7 @@ export interface ApiPostPost extends Schema.CollectionType {
     description: Attribute.Text;
     photo: Attribute.Media;
     date: Attribute.DateTime;
-    authorId: Attribute.Relation<
+    theAuthor: Attribute.Relation<
       'api::post.post',
       'oneToOne',
       'plugin::users-permissions.user'

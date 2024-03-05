@@ -32,7 +32,7 @@
     "date": {
       "type": "datetime"
     },
-    "authorId": {
+    "theAuthor": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"

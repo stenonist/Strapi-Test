@@ -16,7 +16,7 @@ export interface UserCreate{
     username: string,
     firstname: string;
     lastname: string;
-    profilePic: any,
+    // profilePic: any,
     email: string;
     password: string;
     tags: string[];

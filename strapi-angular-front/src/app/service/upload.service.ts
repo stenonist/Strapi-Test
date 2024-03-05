@@ -10,25 +10,26 @@ export class UploadService {
 
   baseUrl: string = environment.baseUrl;
   headers = new HttpHeaders({
-		'Authorization': `Bearer ${this.userService.authToken()}`
-	 })
+    Authorization: `Bearer ${this.userService.authToken()}`,
+});
 
   constructor(private http: HttpClient,private userService: UserService) {
     effect(() => {
-
       let auth = this.userService.authToken();
       this.headers = new HttpHeaders({
-          'Authorization': `Bearer ${auth}`,
+          Authorization: `Bearer ${auth}`,
       });
-    })
+  });
   }
 
   uploadImageApi(data:any){
-		
+    this.headers = new HttpHeaders({
+        Authorization: `Bearer ${this.userService.authToken()}`,
+    });
 		return this.http
             .post<[{}]>(this.baseUrl + '/upload', data, {headers: this.headers});
 	}
-  deleteImageApi(id: string){
+  deleteImageApi(id: number){
 		
 		return this.http
             .delete<[{}]>(this.baseUrl + '/upload/files/' + id, {headers: this.headers});

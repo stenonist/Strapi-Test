@@ -45,34 +45,48 @@ export class SignupComponent implements OnInit {
       fData.tags=[];
       fData.following=[];
       fData.followers=[];
-      console.log(fData);
 
       const formData = new FormData();
       formData.append("files", this.theFile);
 
-      this.uploadService.uploadImageApi(formData).subscribe(r=>{
-        let theImage = r[0];
-        console.log(theImage);
-
-        this.userService.addUserApi({
-            username: fData.username,
-            email: fData.email,
-            password: fData.password,
-            firstname: fData.firstname,
-            lastname: fData.lastname,
-            profilePic: theImage,
-            tags: fData.tags,
-            followers: fData.followers,
-            following: fData.following
-        })
-        .subscribe(res=>{
-          this.userService.getUserApi(res.user.id).subscribe(u=>{
-            this.userService.currUser.set(u);
-            this.router.navigate(['/profile']);
-          });
-
-        })
+      this.userService.addUserApi({
+        username: fData.username,
+        email: fData.email,
+        password: fData.password,
+        firstname: fData.firstname,
+        lastname: fData.lastname,
+        // profilePic: theImage,
+        tags: fData.tags,
+        followers: fData.followers,
+        following: fData.following
       })
+      .subscribe(res=>{
+        if (res.jwt) {
+          localStorage.setItem('jwt',res.jwt)
+          this.userService.authToken.set(res.jwt);
+          this.uploadService.uploadImageApi(formData).subscribe(r=>{
+            let theImage = r[0];
+            let data = {id:res.user.id, profilePic:theImage}
+            this.userService.updateUserApi(data).subscribe(
+                u=>{
+                    if (res.user) {
+                        this.userService.getUserApi(res.user.id).subscribe(u=>{
+                            this.userService.currUser.set(u);
+                            this.router.navigate(['/profile']);
+                        })
+                    }
+                }
+            )
+          })
+        }else{
+          this.errorExists = true;
+          this.errorText = "Password is incorrect";
+        }
+        
+
+      })
+
+      
       
     }
   }

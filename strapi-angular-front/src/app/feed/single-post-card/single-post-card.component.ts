@@ -17,7 +17,9 @@ export class SinglePostCardComponent implements OnInit {
       if (this.userName) {
         this.userName = this.userName + " " + this.userService.getUserById(this.post?.authorId)?.lastname;
       } */
+      console.log(this.post.attributes);
     }
+    
     
   }
 

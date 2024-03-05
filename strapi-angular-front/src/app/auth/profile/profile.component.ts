@@ -25,8 +25,6 @@ export class ProfileComponent implements OnInit {
 
   constructor(private userService: UserService,private feedService: FeedService, private router: Router,  private activatedRoute: ActivatedRoute) {
     effect(() => {
-        console.log(this.userService.currUser());
-        
         this.currentUser = this.userService.currUser();
         if (this.route) {
 
@@ -44,12 +42,9 @@ export class ProfileComponent implements OnInit {
       this.route = parameter['id'];
     })
     if(this.currentUser){
-      console.log(this.currentUser);
       
       if (this.route) {
-        console.log("isRoute");
         this.userService.getUserApi(this.route).subscribe((u)=>{
-          console.log(u);
           this.selectedUser = u as User;
         })
         
@@ -66,25 +61,20 @@ export class ProfileComponent implements OnInit {
       }
     }else{
       this.selectedUser = this.currentUser;
-      // console.log(this.currentUser);
       
       this.router.navigate(['/login']);
     }
   }
 
-  /* followUser(id:number|undefined){
-    if (id!==undefined) {
-      this.userService.followUser(id);
-      this.ngOnInit();
-      this.isFollowing = true;
-    }
+  followUser(id: number) {
+    this.userService.followUser(id);
+    
+    //this.feedService.nextPostsUpdate();
   }
-  unfollowUser(id:number|undefined){
-    if (id!==undefined) {
+  unfollowUser(id: number) {
       this.userService.unfollowUser(id);
-      this.ngOnInit();
-      this.isFollowing = false;
-    }
-  } */
+      
+      //this.feedService.nextPostsUpdate();
+  }
 
 }
